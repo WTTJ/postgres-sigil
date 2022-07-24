@@ -13,6 +13,13 @@ defmodule Siql do
   end
 
   @doc """
+  Syntax sugar to build the query string & pass it and bindings
+  to Postgrex.query!. We use apply to avoid depending explicitly on Postgrex.
+  """
+  def run!(%Sql{statement: st, bindings: bi}, pid) when is_pid(pid),
+    do: Kernel.apply(Postgrex, :query!, [pid, st.(1), bi])
+
+  @doc """
   This macro rewrites interpolated values into calls to Siql.append
   For inserts and updates you can wrap the variables in values()
   """
