@@ -20,7 +20,7 @@ and will be replaced with `$1`, `$2` etc positional parameters before being sent
 import Siql
 
 def find_user(id), 
-  do:  ~q"SELECT * FROM users WHERE id = #{id}" |> run!(:postgres)
+  do:  ~q"SELECT * FROM users WHERE id = #{id}"
 ```
 
 ### Fragments
@@ -32,7 +32,7 @@ def recently_seen(),
   do: ~q"last_seen >= NOW() - INTERVAL '1 day'"
 
 def find_recent_user(id), 
-  do:  ~q"SELECT * FROM users WHERE #{recently_seen()}" |> run!(:postgres)
+  do:  ~q"SELECT * FROM users WHERE #{recently_seen()}"
 ```
 
 ### Inserts and updates
@@ -51,8 +51,8 @@ the correct SQL for a batch insert operation:
 ```elixir
 def insert_users(),
   do: ~q"INSERT INTO users #{values([
-    %User{name: "A", email: "a@a.com", address1: "123 fake street"},
-    %User{name: "B", email: "b@b.com", address1: "234 fake street"}
+    {"A", "a@a.com", "123 fake street"},
+    {"B", "b@b.com", "234 fake street"}
   ])}"
 ```
 
@@ -70,7 +70,7 @@ Column names can be interpolated by wrapping the interpolation in `col()`
 
 ```elixir
 def find_recent_user(id), 
-  do:  ~q"SELECT #{col("name")} FROM users" |> run!(:postgres)
+  do:  ~q"SELECT #{col("name")} FROM users"
 ```
 
 ### Unsafe interpolation
@@ -82,14 +82,18 @@ This should only be used if you're fully aware of the [security implications](ht
 
 ```elixir
 def find_recent_user(id), 
-  do:  ~q"SELECT #{unsafe("name")} FROM users" |> run!(:postgres)
+  do:  ~q"SELECT #{unsafe("name")} FROM users"
 ```
+
+## Running queries
+
+You can run the queries either with Ecto or directly with Postgrex.
+`query!` functions for each are defined in `PostgresSigil.Postgrex` or `PostgresSigil.Ecto`.
 
 ## Handling results
 
 `PostgresSigil.Results` defines a number of functions to make it easier to process the results that
 Postgrex returns.
-
 
 ## Installation
 
