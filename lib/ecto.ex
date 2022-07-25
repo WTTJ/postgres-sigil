@@ -1,5 +1,9 @@
-defmodule Siql.Ecto do
-  alias Siql.Sql
+defmodule PostgresSigil.Ecto do
+  alias PostgresSigil.Sql
+
+  @moduledoc """
+  Provides a query! function that calls through to Ecto
+  """
 
   @doc """
   Syntax sugar to build the query string & pass it and bindings

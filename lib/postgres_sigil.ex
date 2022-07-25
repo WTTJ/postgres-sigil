@@ -1,13 +1,16 @@
-defmodule Siql do
-  alias Siql.Sql
+defmodule PostgresSigil do
+  alias PostgresSigil.Sql
 
   @moduledoc """
-  Utility to make it easier to compose together SQL expressions.
+  A sigil (~q) to make it easier to compose together SQL expressions.
   A SQL expression consists of a statement and interpolated variables.
   Expressions themselves can be interpolated and will be flattened.
   """
 
   defmodule Sql do
+    @moduledoc """
+    Struct that consists of a query statement and variable bindings
+    """
     @enforce_keys [:statement, :bindings]
     defstruct [:statement, :bindings]
   end
@@ -20,51 +23,51 @@ defmodule Siql do
     Enum.reduce(
       exprs,
       quote do
-        Siql.lift("")
+        PostgresSigil.lift("")
       end,
       fn
         # interpolate a values() call with one tupleN argument
         {:"::", _, [{_, _, [{:values, _, [{:{}, _, vars}]}]}, _]}, acc ->
           quote do
             unquote(acc)
-            |> Siql.append_unsafe("VALUES")
-            |> Siql.append_values(unquote({:{}, [], vars}))
+            |> PostgresSigil.append_unsafe("VALUES")
+            |> PostgresSigil.append_values(unquote({:{}, [], vars}))
           end
 
         # interpolate a values() call with one tuple2 argument
         {:"::", _, [{_, _, [{:values, _, [{a, b}]}]}, _]}, acc ->
           quote do
             unquote(acc)
-            |> Siql.append_unsafe("VALUES")
-            |> Siql.append_values(unquote({a, b}))
+            |> PostgresSigil.append_unsafe("VALUES")
+            |> PostgresSigil.append_values(unquote({a, b}))
           end
 
         # interpolate a values() call with multiple arguments
         {:"::", _, [{_, _, [{:values, _, vars}]}, _]}, acc ->
           quote do
             unquote(acc)
-            |> Siql.append_unsafe("VALUES")
-            |> Siql.append_values(unquote({:{}, [], vars}))
+            |> PostgresSigil.append_unsafe("VALUES")
+            |> PostgresSigil.append_values(unquote({:{}, [], vars}))
           end
 
         {:"::", _, [{_, _, [{:unsafe, _, [var]}]}, _]}, acc ->
           quote do
-            Siql.append_unsafe(unquote(acc), unquote(var))
+            PostgresSigil.append_unsafe(unquote(acc), unquote(var))
           end
 
         {:"::", _, [{_, _, [{:col, _, [var]}]}, _]}, acc ->
           quote do
-            Siql.append_identifier(unquote(acc), unquote(var))
+            PostgresSigil.append_identifier(unquote(acc), unquote(var))
           end
 
         {:"::", _, [{_, _, [var]}, _]}, acc ->
           quote do
-            Siql.append(unquote(acc), unquote(var))
+            PostgresSigil.append(unquote(acc), unquote(var))
           end
 
         expr, acc when is_binary(expr) ->
           quote do
-            Siql.append_unsafe(unquote(acc), unquote(expr))
+            PostgresSigil.append_unsafe(unquote(acc), unquote(expr))
           end
       end
     )
@@ -120,7 +123,7 @@ defmodule Siql do
   Appends a DB identifier (i.e. a column name) to the query.
   It is enclosed in double quotes so any quotes within the name are escaped.
   """
-  @spec append_identifier(%Siql.Sql{}, any) :: %Siql.Sql{}
+  @spec append_identifier(%Sql{}, any) :: %Sql{}
   def append_identifier(%Sql{statement: st, bindings: bi}, col),
     do: %Sql{
       statement: fn off -> "#{st.(off)}\"#{col |> String.replace("\"", "\\\"")}\"" end,
@@ -132,7 +135,7 @@ defmodule Siql do
   Obviously doing this can lead to SQL injection vulnerabilities so be careful
   but there are legitimate reasons to want to do this from time to time.
   """
-  @spec append_unsafe(%Siql.Sql{}, any) :: %Siql.Sql{}
+  @spec append_unsafe(%Sql{}, any) :: %Sql{}
   def append_unsafe(%Sql{statement: st, bindings: bi}, item),
     do: %Sql{statement: fn off -> "#{st.(off)}#{item}" end, bindings: bi}
 end

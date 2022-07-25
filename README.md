@@ -1,14 +1,15 @@
-# Siql
+# Postgres Sigil
+
+⚠️ Currently WIP
 
 A library to improve the ergonomics of working with [Postgrex.](https://github.com/elixir-ecto/postgrex).
 It can be thought of as a middle ground between [Ecto](https://github.com/elixir-ecto/ecto) and 
 [ayesql](https://github.com/alexdesousa/ayesql) in that the goal is to write queries in plain SQL 
 but within Elixir source files, not separately.
 
-This is heavily inspired by the Scala library [doobie](https://tpolecat.github.io/doobie/) which
-I've been missing greatly.
+This is heavily inspired by the Scala library [doobie](https://tpolecat.github.io/doobie/).
 
-## Usage
+## Writing queries
 
 ### Basic selects
 
@@ -84,15 +85,21 @@ def find_recent_user(id),
   do:  ~q"SELECT #{unsafe("name")} FROM users" |> run!(:postgres)
 ```
 
+## Handling results
+
+`PostgresSigil.Results` defines a number of functions to make it easier to process the results that
+Postgrex returns.
+
+
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `siql` to your list of dependencies in `mix.exs`:
+by adding `PostgresSigil` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:siql, "~> 0.1.0"}
+    {:postgres_sigil, "~> 0.1.0"}
   ]
 end
 ```

@@ -1,5 +1,9 @@
-defmodule Siql.Postgrex do
-  alias Siql.Sql
+defmodule PsqlSigil.Postgrex do
+  alias PostgresSigil.Sql
+
+  @moduledoc """
+  Provides a query! function that calls through to Postgrex
+  """
 
   @doc """
   Syntax sugar to build the query string & pass it and bindings

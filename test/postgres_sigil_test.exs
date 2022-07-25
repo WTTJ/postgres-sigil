@@ -1,7 +1,7 @@
-defmodule SiqlTest do
+defmodule PostgresSigilTest do
   use ExUnit.Case, async: true
-  alias Siql.Sql
-  import Siql
+  alias PostgresSigil.Sql
+  import PostgresSigil
 
   test "Should generate correct interpolated expressions" do
     %Sql{statement: st, bindings: ["c"]} = ~q"SELECT * FROM a WHERE b = #{"c"}"
