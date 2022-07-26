@@ -31,27 +31,19 @@ defmodule PostgresSigil do
         PostgresSigil.lift("")
       end,
       fn
-        # interpolate a values() call with one tupleN argument
-        {:"::", _, [{_, _, [{:values, _, [{:{}, _, vars}]}]}, _]}, acc ->
+        # interpolate a values() call with one argument
+        {:"::", _, [{_, _, [{:values, _, [var]}]}, _]}, acc ->
           quote do
             unquote(acc)
-            |> PostgresSigil.append_unsafe("VALUES")
-            |> PostgresSigil.append_values(unquote({:{}, [], vars}))
-          end
-
-        # interpolate a values() call with one tuple2 argument
-        {:"::", _, [{_, _, [{:values, _, [{a, b}]}]}, _]}, acc ->
-          quote do
-            unquote(acc)
-            |> PostgresSigil.append_unsafe("VALUES")
-            |> PostgresSigil.append_values(unquote({a, b}))
+            |> PostgresSigil.append_unsafe("VALUES ")
+            |> PostgresSigil.append_values(unquote(var))
           end
 
         # interpolate a values() call with multiple arguments
         {:"::", _, [{_, _, [{:values, _, vars}]}, _]}, acc ->
           quote do
             unquote(acc)
-            |> PostgresSigil.append_unsafe("VALUES")
+            |> PostgresSigil.append_unsafe("VALUES ")
             |> PostgresSigil.append_values(unquote({:{}, [], vars}))
           end
 
@@ -108,18 +100,23 @@ defmodule PostgresSigil do
   so will generate multiple bracket-enclosed sequences.
   """
   @spec append_values(Sql.t(), any) :: Sql.t()
+  def append_values(sql = %Sql{}, tuple) when is_tuple(tuple),
+    do:
+      tuple
+      |> Tuple.to_list()
+      |> Enum.intersperse(lift(", "))
+      |> Enum.reduce(append_unsafe(sql, "("), fn v, sql -> append(sql, v) end)
+      |> append_unsafe(")")
+
   def append_values(sql = %Sql{}, var) when is_list(var),
-    do: var |> Enum.reduce(sql, fn val, sql -> sql |> append_values(val) end)
+    do:
+      var
+      |> Enum.map(fn v -> &append_values(&1, v) end)
+      |> Enum.intersperse(&append_unsafe(&1, ", "))
+      |> Enum.reduce(sql, fn fun, sql -> fun.(sql) end)
 
-  def append_values(sql = %Sql{}, tuple) when is_tuple(tuple) do
-    case(Tuple.to_list(tuple)) do
-      [h | ts] ->
-        ~q"#{sql} (#{h}#{ts |> Enum.reduce(~q"", fn v, q -> ~q"#{q}, #{v}" end)})"
-
-      [] ->
-        sql
-    end
-  end
+  def append_values(%Sql{}, %{}),
+    do: raise("Maps cannot be sent as SQL values")
 
   def append_values(sql = %Sql{}, val),
     do: ~q"#{sql} (#{val})"

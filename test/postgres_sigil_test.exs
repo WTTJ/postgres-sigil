@@ -15,7 +15,7 @@ defmodule PostgresSigilTest do
     assert [1, 2, 3] = bs
   end
 
-  test "Add bindings and enclose them in brackets when values() is used" do
+  test "Should add bindings and enclose them in brackets when values() is used" do
     %Sql{statement: st, bindings: bs} = ~q"INSERT INTO a #{values("a", "2")}"
     assert st.(0) == "INSERT INTO a VALUES ($0, $1)"
     assert ["a", "2"] = bs
@@ -33,9 +33,15 @@ defmodule PostgresSigilTest do
     assert ["a", "2", "c"] = bs
   end
 
+  test "Should pass non top level lists as a single variable to postgres" do
+    %Sql{statement: st, bindings: bs} = ~q"INSERT INTO a #{values({["a", "2", "c"]})}"
+    assert st.(0) == "INSERT INTO a VALUES ($0)"
+    assert [["a", "2", "c"]] = bs
+  end
+
   test "Should escape identifiers when col() is used" do
     %Sql{statement: st, bindings: bs} = ~q"SELECT #{col("a\"b")}"
-    assert st.(0) == "SELECT \"a\\\"b\""
+    assert st.(0) == ~S(SELECT "a\"b")
     assert [] = bs
   end
 
