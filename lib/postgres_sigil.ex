@@ -13,6 +13,11 @@ defmodule PostgresSigil do
     """
     @enforce_keys [:statement, :bindings]
     defstruct [:statement, :bindings]
+
+    @type t :: %__MODULE__{
+      statement: (non_neg_integer() -> binary()),
+      bindings: list(any())
+    }
   end
 
   @doc """
@@ -76,7 +81,7 @@ defmodule PostgresSigil do
   @doc """
   Lift a plain string into a SQL expression with no variables
   """
-  @spec lift(binary) :: %Sql{}
+  @spec lift(binary) :: Sql.t()
   def lift(a) when is_binary(a),
     do: %Sql{statement: fn _ -> a end, bindings: []}
 
@@ -84,7 +89,7 @@ defmodule PostgresSigil do
   Append the given variable to the SQL expression.
   It will be added as position parameter and the value will go into bindings
   """
-  @spec append(%Sql{}, any()) :: %Sql{}
+  @spec append(Sql.t(), any()) :: Sql.t()
   def append(%Sql{statement: sta, bindings: ba}, %Sql{statement: stb, bindings: bb}),
     do: %Sql{
       statement: fn off -> "#{sta.(off)}#{stb.(off + (ba |> length))}" end,
@@ -102,7 +107,7 @@ defmodule PostgresSigil do
   Multiple variables can be passed by using a tuple. Lists are interpreted to be bulk inserts,
   so will generate multiple bracket-enclosed sequences.
   """
-  @spec append_values(%Sql{}, any) :: %Sql{}
+  @spec append_values(Sql.t(), any) :: Sql.t()
   def append_values(sql = %Sql{}, var) when is_list(var),
     do: var |> Enum.reduce(sql, fn val, sql -> sql |> append_values(val) end)
 
@@ -123,7 +128,7 @@ defmodule PostgresSigil do
   Appends a DB identifier (i.e. a column name) to the query.
   It is enclosed in double quotes so any quotes within the name are escaped.
   """
-  @spec append_identifier(%Sql{}, any) :: %Sql{}
+  @spec append_identifier(Sql.t(), any) :: Sql.t()
   def append_identifier(%Sql{statement: st, bindings: bi}, col),
     do: %Sql{
       statement: fn off -> "#{st.(off)}\"#{col |> String.replace("\"", "\\\"")}\"" end,
@@ -135,7 +140,7 @@ defmodule PostgresSigil do
   Obviously doing this can lead to SQL injection vulnerabilities so be careful
   but there are legitimate reasons to want to do this from time to time.
   """
-  @spec append_unsafe(%Sql{}, any) :: %Sql{}
+  @spec append_unsafe(Sql.t(), any) :: Sql.t()
   def append_unsafe(%Sql{statement: st, bindings: bi}, item),
     do: %Sql{statement: fn off -> "#{st.(off)}#{item}" end, bindings: bi}
 end

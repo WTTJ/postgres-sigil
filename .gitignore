@@ -25,3 +25,5 @@ siql-*.tar
 # Temporary files, for example, from tests.
 /tmp/
 .DS_Store
+/priv/plts/*.plt
+/priv/plts/*.plt.hash
