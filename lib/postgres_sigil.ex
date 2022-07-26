@@ -15,9 +15,9 @@ defmodule PostgresSigil do
     defstruct [:statement, :bindings]
 
     @type t :: %__MODULE__{
-      statement: (non_neg_integer() -> binary()),
-      bindings: list(any())
-    }
+            statement: (non_neg_integer() -> binary()),
+            bindings: list(any())
+          }
   end
 
   @doc """

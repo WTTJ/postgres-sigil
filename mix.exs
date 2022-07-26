@@ -23,7 +23,7 @@ defmodule PostgresSigil.MixProject do
     [
       {:ex_doc, "~> 0.27", only: :dev, runtime: false},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false}
     ]
   end
 end
