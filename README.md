@@ -17,7 +17,7 @@ Use the `~q` sigil to construct queries. Variables can be safely interpolated in
 and will be replaced with `$1`, `$2` etc positional parameters before being sent to Postgres.
 
 ```elixir
-import Siql
+import PostgresSigil
 
 def find_user(id), 
   do:  ~q"SELECT * FROM users WHERE id = #{id}"
