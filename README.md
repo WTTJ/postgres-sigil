@@ -1,8 +1,8 @@
 # Postgres Sigil
 
-⚠️ Currently WIP
+![example workflow](https://github.com/ottatech/postgres-sigil/actions/workflows/config.yml/badge.svg)
 
-A library to improve the ergonomics of working with [Postgrex.](https://github.com/elixir-ecto/postgrex).
+A library to improve the ergonomics of working with Postgres in Elixir.
 It can be thought of as a middle ground between [Ecto](https://github.com/elixir-ecto/ecto) and 
 [ayesql](https://github.com/alexdesousa/ayesql) in that the goal is to write queries in plain SQL 
 but within Elixir source files, not separately.
