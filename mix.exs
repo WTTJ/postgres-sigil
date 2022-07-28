@@ -8,7 +8,7 @@ defmodule PostgresSigil.MixProject do
       dialyzer: [plt_file: {:no_warn, "priv/plts/dialyzer.plt"}],
       elixir: "~> 1.13",
       package: package(),
-      version: System.get_env("GITHUB_REF_NAME", "1.0.0")
+      version: System.get_env("VERSION", "1.0.0")
     ]
   end
 
