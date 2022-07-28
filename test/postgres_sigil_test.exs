@@ -1,4 +1,4 @@
-defmodule PostgresSigilTest do
+defmodule PostgresSigil.Test do
   use ExUnit.Case, async: true
   alias PostgresSigil.Sql
   import PostgresSigil

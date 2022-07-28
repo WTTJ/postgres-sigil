@@ -71,6 +71,12 @@ defmodule PostgresSigil do
   end
 
   @doc """
+  Turn the SQL into a tuple of the statement & bindings
+  """
+  def to_tuple(%Sql{statement: st, bindings: bi}),
+    do: {st.(1), bi}
+
+  @doc """
   Lift a plain string into a SQL expression with no variables
   """
   @spec lift(binary) :: Sql.t()

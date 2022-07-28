@@ -20,21 +20,21 @@ defmodule PostgresSigil.Results do
   def single_value_or_nil!(%{rows: [[value]]}, _),
     do: value
 
-  def single_value_or_nil!(%{rows: []}, _),
+  def single_value_or_nil!(%{rows: rows}, _) when is_nil(rows) or length(rows) == 0,
     do: nil
 
   @doc """
   Given a result set, ensure it either contains exactly one value.
   In all other cases a match error will be thrown
   """
-  def single_value!(%{rows: [[value]]}),
+  def single_value!(%{rows: [[value]]}) when not is_nil(value),
     do: value
 
   @doc """
   Returns whether any rows have come back
   """
-  def exists(%{rows: rows}),
-    do: rows |> length > 0
+  def exists(%{num_rows: num_rows}),
+    do: num_rows > 0
 
   @doc """
   Zip the returned column names with the rows to produce a list of maps,
@@ -52,9 +52,9 @@ defmodule PostgresSigil.Results do
   end
 
   @doc """
-  Zip the returned column names with the rows to produce a list of maps,
-  where each key is the column name.
+  Turn the results into a list of maps, then turn them into a struct.
+  If any required keys are missing an exception will be raised.
   """
   def to_structs!(results = %{columns: _, rows: _}, struct),
-    do: to_maps(results) |> Enum.map(&Kernel.struct!(struct, &1))
+    do: to_maps(results, keys: :atoms) |> Enum.map(&Kernel.struct!(struct, &1))
 end
