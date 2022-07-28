@@ -4,12 +4,20 @@ defmodule PostgresSigil.MixProject do
   def project do
     [
       app: :postgres_sigil,
-      version: "0.1.0",
-      elixir: "~> 1.12",
       deps: deps(),
-      dialyzer: [
-        plt_file: {:no_warn, "priv/plts/dialyzer.plt"}
-      ]
+      dialyzer: [plt_file: {:no_warn, "priv/plts/dialyzer.plt"}],
+      elixir: "~> 1.13",
+      package: package(),
+      version: System.get_env("GITHUB_REF_NAME", "1.0.0")
+    ]
+  end
+
+  defp package do
+    [
+      files: ~w(lib .formatter.exs mix.exs README.md LICENSE),
+      description: "A sigil to make it easier to safely write Postgres queries",
+      links: %{"GitHub" => "https://github.com/OttaTech/postgres-sigil"},
+      licenses: ["Apache-2.0"]
     ]
   end
 

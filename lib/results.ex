@@ -20,7 +20,7 @@ defmodule PostgresSigil.Results do
   def single_value_or_nil!(%{rows: [[value]]}, _),
     do: value
 
-  def single_value_or_nil!(%{rows: rows}, _) when is_nil(rows) or length(rows) == 0,
+  def single_value_or_nil!(%{rows: rows}, _) when is_nil(rows) or rows == [],
     do: nil
 
   @doc """
