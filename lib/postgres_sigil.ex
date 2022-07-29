@@ -85,7 +85,8 @@ defmodule PostgresSigil do
 
   @doc """
   Append the given variable to the SQL expression.
-  It will be added as position parameter and the value will go into bindings
+  It will be added as position parameter and the value will go into bindings.
+  Non boolean atoms will be converted into strings.
   """
   @spec append(Sql.t(), any()) :: Sql.t()
   def append(%Sql{statement: sta, bindings: ba}, %Sql{statement: stb, bindings: bb}),
@@ -93,6 +94,9 @@ defmodule PostgresSigil do
       statement: fn off -> "#{sta.(off)}#{stb.(off + (ba |> length))}" end,
       bindings: ba |> Enum.concat(bb)
     }
+
+  def append(sql = %Sql{}, var) when is_atom(var) and not is_boolean(var),
+    do: append(sql, var |> Atom.to_string())
 
   def append(%Sql{statement: st, bindings: bi}, var),
     do: %Sql{

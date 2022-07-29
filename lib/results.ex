@@ -31,6 +31,12 @@ defmodule PostgresSigil.Results do
     do: value
 
   @doc """
+  Extract the number of rows affected by the SQL operation
+  """
+  def num_rows(%{num_rows: num_rows}),
+    do: num_rows
+
+  @doc """
   Returns whether any rows have come back
   """
   def exists(%{num_rows: num_rows}),

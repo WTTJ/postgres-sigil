@@ -8,6 +8,12 @@ defmodule PostgresSigil.Test do
     assert st.(0) == "SELECT * FROM a WHERE b = $0"
   end
 
+  test "Should convert non boolean atoms to strings" do
+    %Sql{bindings: ["c"]} = ~q"SELECT * FROM a WHERE b = #{:c}"
+    %Sql{bindings: [true]} = ~q"SELECT * FROM a WHERE b = #{true}"
+    %Sql{bindings: [false]} = ~q"SELECT * FROM a WHERE b = #{false}"
+  end
+
   test "Should adjust offsets for nested interpolations" do
     where = ~q"foo = #{1} AND bar = #{2}"
     %Sql{statement: st, bindings: bs} = ~q"SELECT * FROM a WHERE #{where} AND baz = #{3}"
