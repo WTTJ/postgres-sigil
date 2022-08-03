@@ -23,6 +23,7 @@ defmodule PostgresSigil.Explain do
     |> single_value!()
     |> encode_json!()
     |> write_to_file!(opts)
+
     sql
   end
 

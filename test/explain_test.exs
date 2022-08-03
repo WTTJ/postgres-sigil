@@ -22,8 +22,6 @@ defmodule PostgresSigil.ExplainTest do
     File.rm!("explain.json")
   end
 
-
-
   test "Should use a different path if one is provided" do
     explain(~q"SELECT 1", [path: "foo.json"], fn _ -> %{rows: [[%{output: "json"}]]} end)
     assert ~s({"output":"json"}) == File.read!("foo.json")
