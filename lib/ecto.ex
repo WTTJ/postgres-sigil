@@ -1,9 +1,17 @@
 defmodule PostgresSigil.Ecto do
+  import PostgresSigil.Explain
   alias PostgresSigil.Sql
 
   @moduledoc """
-  Provides a query! function that calls through to Ecto
+  Provides functions to run queries with Ecto.
   """
+
+  @doc """
+  Run the query with explain and write it to a file.
+  This is for debugging during development.
+  """
+  def explain_to_file!(query = %Sql{}, repo, opts \\ []),
+    do: explain(query, opts, &query!(&1, repo))
 
   @doc """
   Syntax sugar to build the query string & pass it and bindings

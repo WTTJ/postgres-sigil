@@ -49,7 +49,7 @@ defmodule PostgresSigil.Results do
   def to_maps(%{columns: cols, rows: rows}, [keys: keys] \\ [keys: :strings]) do
     cols =
       if keys == :atoms do
-        Enum.map(cols, &String.to_existing_atom/1)
+        Enum.map(cols, &String.to_atom/1)
       else
         cols
       end

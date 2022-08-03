@@ -88,6 +88,13 @@ You can run the queries either with Ecto or directly with Postgrex.
 ~q"SELECT * FROM users" |> PostgresSigil.Postgrex.query!(:pid) # postgrex
 ```
 
+## Explaining queries
+
+Both the Ecto and Postgrex integrations provide `explain_to_file!` that will
+run the query with `EXPLAIN ANALYZE` and write the result to a file named `explain.json`.
+
+This can then be pasted into https://explain.dalibo.com/ for analysis.
+
 ## Handling results
 
 `PostgresSigil.Results` defines a number of functions to make it easier to process the results that Postgrex returns.

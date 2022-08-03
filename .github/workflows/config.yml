@@ -43,7 +43,7 @@ jobs:
           elixir-version: "1.13"
       - name: Set tag environment variable
         run: echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
-      - run: mix deps.get
+      - run: mix deps.get --only prod
       - name: Set version from git tag
         run: |
           export VERSION=${GITHUB_REF/refs\/tags\//}
