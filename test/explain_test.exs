@@ -6,7 +6,7 @@ defmodule PostgresSigil.ExplainTest do
 
   test "Should return the original query" do
     sql = ~q"SELECT 1"
-    assert sql = explain(sql, [], fn _ -> %{rows: [[%{output: "json"}]]} end)
+    assert sql == explain(sql, [], fn _ -> %{rows: [[%{output: "json"}]]} end)
     File.rm!("explain.json")
   end
 
